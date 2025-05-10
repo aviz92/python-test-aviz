@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='python-test-aviz',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(include=['python_test_aviz', 'python_test_aviz.*']),
     install_requires=[
         'setuptools>=42.0.0',
