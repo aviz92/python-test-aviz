@@ -2,8 +2,8 @@ name: Publish to PyPI
 
 on:
   push:
-    # branches:
-    #   - main
+   branches:
+     - main
     tags:
       - 'v*'  # Triggers only if you push a tag like v1.0.0
 
@@ -31,3 +31,12 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        run: |
+          python -m twine upload \
+            --repository-url https://upload.github.com/aviz92/python-test-aviz/ \
+            dist/
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
