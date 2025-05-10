@@ -1,3 +1,7 @@
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project.urls]
+"Homepage" = "https://github.com/aviz92/python-test-aviz"
+"PyPI" = "https://pypi.org/project/python-test-aviz/"
