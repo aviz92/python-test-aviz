@@ -2,6 +2,15 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "python-test-aviz"
+version = "0.1.0"  # Add the version number here
+authors = [{name = "Your Name", email = "youremail@example.com"}]
+description = "A brief description of your project"
+dependencies = [
+    # List of project dependencies
+]
+
 [project.urls]
 "Homepage" = "https://github.com/aviz92/python-test-aviz"
 "PyPI" = "https://pypi.org/project/python-test-aviz/"
