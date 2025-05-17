@@ -1,4 +1,10 @@
 setuptools
 wheel
-custom-python-logger
+dotenv
 twine
+pytest
+
+custom-python-logger
+python-jira-plus
+python-pandas-translation
+python-simple-email-sender
