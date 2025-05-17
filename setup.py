@@ -1,28 +1,36 @@
 from setuptools import setup, find_packages
 
+package_version = '1.0.1'
+
+package_name = 'python-test-aviz'
+package_description = 'A test repository for testing the publishing process of a Python package.'
+
+package_long_description_content_type = 'text/markdown'
+package_url = f'https://github.com/aviz92/{package_name}'
+package_python_requires = '>=3.11'
+package_author = 'Avi Zaguri'
+
+with open('requirements.txt', 'r') as file:
+    package_install_requires = [
+        line.strip() for line in file.readlines() if line.strip() and not line.startswith('#')
+    ]
+
+with open('README.md', 'r') as file:
+    package_long_description = file.read()
+
 setup(
-    name='python-test-aviz',
-    version='0.1.4',
-    packages=find_packages(include=['python_test_aviz', 'python_test_aviz.*']),
-    install_requires=[
-        'setuptools>=42.0.0',
-        'wheel>=0.36.2',
-        'custom-python-logger>=0.1.4',
-    ],
-    author='Avi Zaguri',
+    name=package_name,
+    version=package_version,
+    packages=find_packages(include=[package_name, f'{package_name}.*']),
+    install_requires=package_install_requires,
+    author=package_author,
     author_email='',
-    description='A test repository for testing the publishing process of a Python package.',
-    long_description=open('README.md').read(),
-    long_description_content_type='text/markdown',
-    url='https://github.com/aviz92/python-test-aviz',
+    description=package_description,
+    long_description=package_long_description,
+    long_description_content_type=package_long_description_content_type,
+    url=package_url,
     project_urls={
-        'Repository': 'https://github.com/aviz92/python-test-aviz',
+        'Repository': package_url,
     },
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-    ],
-    python_requires='>=3.8',
+    python_requires=package_python_requires,
 )
