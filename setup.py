@@ -5,6 +5,7 @@ package_version = '1.0.2'
 package_name = 'python-test-aviz'
 package_description = 'A test repository for testing the publishing process of a Python package.'
 
+package_name_ = package_name.replace('-', '_')
 package_long_description_content_type = 'text/markdown'
 package_url = f'https://github.com/aviz92/{package_name}'
 package_python_requires = '>=3.11'
@@ -21,7 +22,7 @@ with open('README.md', 'r') as file:
 setup(
     name=package_name,
     version=package_version,
-    packages=find_packages(include=[package_name, f'{package_name}.*']),
+    packages=find_packages(include=[package_name_, f'{package_name_}.*']),
     install_requires=package_install_requires,
     author=package_author,
     author_email='',
