@@ -3,8 +3,10 @@ wheel
 dotenv
 twine
 pytest
+pandas
 
 custom-python-logger
 python-jira-plus
+python-notion-plus
 python-pandas-translation
 python-simple-email-sender

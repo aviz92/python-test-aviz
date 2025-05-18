@@ -1,5 +1,5 @@
 import logging
-from custom_python_logger.logger import get_logger
+from custom_python_logger import get_logger
 
 
 class AvizTest:
