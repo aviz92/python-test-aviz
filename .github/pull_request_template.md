@@ -19,6 +19,8 @@
   * [ ] **Version in setup.py updated.**
   * [ ] Documentation updated (code comments, README, or other docs) (if needed)
 
+---
+
 
 [//]: # (Comments below are optional)
 [//]: # (* [ ] All CI checks pass successfully)
