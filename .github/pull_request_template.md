@@ -5,11 +5,13 @@
   * [ ] **Code follows style guidelines** (e.g., linting, formatting)
   * [ ] **No sensitive data** (passwords, tokens, etc.)
 
+---
 
 - Tests:
   * [ ] **Tests added/updated.**
   * [ ] **All tests pass locally.**
 
+---
 
 - Documentation updated:
   * [ ] **Version in setup.py updated.**
