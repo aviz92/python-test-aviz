@@ -1,5 +1,7 @@
 ### ✅ Pull Request Checklist
 
+---
+
 - Code follows project style guidelines:
   * [ ] **Code is self-reviewed and cleaned up.**
   * [ ] **Code follows style guidelines** (e.g., linting, formatting)
