@@ -81,6 +81,7 @@ repos:
         args:
           - "--rcfile=code_quality_config/.pylintrc"
           - "--init-hook=import sys; sys.path.insert(0, 'src')"  # adjust a path
+          - "--enable-all-extentions"
         additional_dependencies: [
           "pylint-django",  # Optional plugins
           "pylint-flask",  # Optional plugins
