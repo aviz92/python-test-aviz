@@ -1,5 +1,9 @@
 import logging
 
+from custom_python_logger import CustomLoggerAdapter
+
+logger: CustomLoggerAdapter = CustomLoggerAdapter(logging.getLogger(__name__))
+
 
 class LoggerTest:
     def __init__(self) -> None:
@@ -11,14 +15,6 @@ class LoggerTest:
 
 
 def main() -> None:
-    from custom_python_logger import get_logger
-
-    logger = get_logger(
-        project_name='Logger Project Test',
-        log_level=logging.DEBUG,
-        # extra={'user': 'test_user'}
-    )
-
     logger.debug("This is a debug message.")
     logger.info("This is an info message.")
     logger.step("This is a step message.")
@@ -36,4 +32,12 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    from custom_python_logger import get_logger
+
+    _ = get_logger(
+        project_name='Logger Project Test',
+        log_level=logging.DEBUG,
+        # extra={'user': 'test_user'}
+    )
+
     main()
