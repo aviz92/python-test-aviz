@@ -17,7 +17,6 @@ def main():
     jira_plus = JiraPlus()
     issue = jira_plus.get_issue_by_key(key=ISSUE_KEY)
     logger.debug(f'issue: {issue}')
-    print()
 
 
 if __name__ == '__main__':

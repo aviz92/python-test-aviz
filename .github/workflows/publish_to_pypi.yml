@@ -11,7 +11,7 @@ jobs:
   build-and-publish:
     name: Build and Publish to PyPI
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: pwd
         run: pwd
@@ -40,7 +40,7 @@ jobs:
         run: |
           pwd
           ls -la
-      
+
       - name: Build the package
         run: python -m build
 
