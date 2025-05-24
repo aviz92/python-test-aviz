@@ -31,3 +31,4 @@ disable=
     W0511,  # TODO / FIXME
     W1203,  # Use % formatting in logging functions and pass the % parameters as arguments - We use f-strings in some cases.
     W1514,  # Using open with a file descriptor - We use open with a file descriptor in some cases.
+    R2044,  # Line with empty comment (empty-comment)
