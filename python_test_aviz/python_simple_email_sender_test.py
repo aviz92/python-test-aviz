@@ -5,7 +5,7 @@ from custom_python_logger import get_logger
 from python_simple_email_sender.gmail_sender import EmailSender
 
 
-def main():
+def main() -> None:
     _ = get_logger(
         project_name='Gmail Sender',
         log_level=logging.DEBUG,

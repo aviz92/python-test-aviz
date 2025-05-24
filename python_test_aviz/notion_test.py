@@ -4,8 +4,10 @@ import os
 
 from python_notion_plus import NotionClient
 
+logger = logging.getLogger(__name__)
 
-def main():
+
+def main() -> None:
     notion_client = NotionClient(database_id=os.getenv("NOTION_DATABASE_ID"))
 
     metadata = notion_client.get_metadata()
@@ -32,7 +34,7 @@ def main():
 if __name__ == '__main__':
     from custom_python_logger import get_logger
 
-    logger = get_logger(
+    _ = get_logger(
         project_name='Logger Project Test',
         log_level=logging.DEBUG,
         # extra={'user': 'test_user'}

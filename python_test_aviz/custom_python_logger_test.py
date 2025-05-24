@@ -2,15 +2,15 @@ import logging
 
 
 class LoggerTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def main(self):
+    def main(self) -> None:
         self.logger.info('Hello World')
         self.logger.debug('Hello World')
 
 
-def main():
+def main() -> None:
     from custom_python_logger import get_logger
 
     logger = get_logger(

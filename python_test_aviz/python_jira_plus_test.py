@@ -7,7 +7,7 @@ from python_jira_plus.jira_plus import JiraPlus
 ISSUE_KEY = 'SCRUM-1'
 
 
-def main():
+def main() -> None:
     logger = get_logger(
         project_name='Logger Project Test',
         log_level=logging.DEBUG,

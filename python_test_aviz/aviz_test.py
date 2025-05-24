@@ -3,15 +3,15 @@ from custom_python_logger import get_logger
 
 
 class AvizTest:
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.name = "Aviz"
 
-    def print_name(self):
+    def print_name(self) -> None:
         self.logger.info(f"Test name: {self.name}")
 
 
-def main():
+def main() -> None:
     _ = get_logger(
         project_name='Logger Project Test',
         log_level=logging.DEBUG,
