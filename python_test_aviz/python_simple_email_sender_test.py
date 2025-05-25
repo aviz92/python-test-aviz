@@ -1,7 +1,7 @@
 import logging
 import os
-from custom_python_logger import get_logger
 
+from custom_python_logger import get_logger
 from python_simple_email_sender.gmail_sender import EmailSender
 
 

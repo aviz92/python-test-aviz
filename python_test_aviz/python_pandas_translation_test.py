@@ -1,7 +1,6 @@
 import logging
 
 import pandas as pd
-
 from python_pandas_translation import pandas_row
 
 logger = logging.getLogger(__name__)

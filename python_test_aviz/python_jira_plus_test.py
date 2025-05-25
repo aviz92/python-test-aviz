@@ -1,6 +1,7 @@
 # get_jira_issue.py
 
 import logging
+
 from custom_python_logger import get_logger
 from python_jira_plus.jira_plus import JiraPlus
 
