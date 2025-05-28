@@ -6,6 +6,9 @@ on:
       jira_key:
         description: 'Jira ticket key'
         required: true
+      sha:
+        description: 'Commit SHA for status check'
+        required: false
 
 jobs:
   jira-ci:
@@ -19,6 +22,20 @@ jobs:
       JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
 
     steps:
+      - name: Set commit status to pending
+        if: inputs.sha != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ inputs.sha }}',
+              state: 'pending',
+              description: 'Checking Jira ticket status...',
+              context: 'jira-check/${{ inputs.jira_key }}'
+            });
+
       - name: Wait for Jira to be DONE
         run: |
           jira_url="https://${JIRA_DOMAIN}/rest/api/3/issue/${JIRA_KEY}"

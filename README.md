@@ -1,1 +1,1 @@
-# Python Test Package - python-test-aviz
+# Python Test Package
