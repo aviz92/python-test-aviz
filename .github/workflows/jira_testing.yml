@@ -36,7 +36,7 @@ jobs:
             const response = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: `Jira Check – ${JIRA_KEY}`,
+              name: `Jira Check – XXX`,
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString()
