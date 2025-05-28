@@ -1,3 +1,5 @@
+name: Jira CI with PR Check
+
 on:
   workflow_dispatch:
     inputs:
@@ -6,41 +8,75 @@ on:
         required: true
       sha:
         description: 'Commit SHA for PR status check'
-        required: false
+        required: true
 
 jobs:
   jira-ci:
-    name: "${{ inputs.jira_key }} test case"
+    name: Jira Check for ${{ inputs.jira_key }}
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+      issues: write
+
+    env:
+      JIRA_KEY: ${{ inputs.jira_key }}
+      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+      JIRA_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
+
     steps:
-      - name: Set pending status
+      - name: Create Check Run
+        id: create-check
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.repos.createCommitStatus({
+            const response = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ inputs.sha }}',
-              state: 'pending',
-              context: 'jira-check',
-              description: 'Waiting for Jira status...'
+              name: `jira-check/${{ inputs.jira_key }}`,
+              head_sha: '${{ inputs.sha }}',
+              status: 'in_progress',
+              started_at: new Date().toISOString()
             });
+            core.setOutput('check_run_id', response.data.id);
 
-      - name: Check Jira status
+      - name: Wait for Jira to be DONE
+        id: jira-wait
         run: |
-          status="To Do"  # mock
-          [[ "$status" == "Done" ]] && echo "done=true" >> $GITHUB_ENV || echo "done=false" >> $GITHUB_ENV
+          jira_url="https://${JIRA_DOMAIN}/rest/api/3/issue/${JIRA_KEY}"
+          auth_header="Authorization: Basic $(echo -n "${JIRA_EMAIL}:${JIRA_TOKEN}" | base64)"
+          for ((i=1;i<=60;i++)); do
+            status=$(curl -s -H "Accept: application/json" -H "${auth_header}" "${jira_url}" | jq -r '.fields.status.name')
+            echo "Status: $status"
+            if [[ "$status" == "Done" ]]; then
+              echo "done=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "done=false" >> $GITHUB_OUTPUT
+          exit 1
 
-      - name: Set final status (success/failure)
+      - name: Finalize Check Run
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const state = process.env.done === 'true' ? 'success' : 'failure';
-            await github.rest.repos.createCommitStatus({
+            const conclusion = "${{ steps.jira-wait.outputs.done }}" === "true" ? "success" : "failure";
+            await github.rest.checks.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ inputs.sha }}',
-              state,
-              context: 'jira-check',
-              description: state === 'success' ? 'Jira ticket is Done ✅' : 'Jira ticket not Done ❌'
+              check_run_id: Number("${{ steps.create-check.outputs.check_run_id }}"),
+              completed_at: new Date().toISOString(),
+              conclusion,
+              output: {
+                title: 'Jira Status Check',
+                summary: conclusion === "success"
+                  ? 'Jira ticket is Done ✅'
+                  : 'Jira ticket is NOT Done ❌',
+                text: 'Checked Jira status for ${{ inputs.jira_key }}'
+              }
             });
