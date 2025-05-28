@@ -7,13 +7,19 @@ on:
         description: 'Jira ticket key'
         required: true
       sha:
-        description: 'Commit SHA for status check'
+        description: 'Commit SHA for PR status check'
         required: false
 
 jobs:
   jira-ci:
     name: "${{ inputs.jira_key }} test case"
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      statuses: write
+      pull-requests: write
+      issues: write
 
     env:
       JIRA_KEY: ${{ inputs.jira_key }}
@@ -48,3 +54,33 @@ jobs:
           done
           echo "Timed out waiting for Jira to be Done"
           exit 1
+
+      - name: Set commit status to success
+        if: always() && inputs.sha != '' && steps.jira-check.outputs.success == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ inputs.sha }}',
+              state: 'success',
+              description: 'Jira ticket is Done ✅',
+              context: 'jira-check/${{ inputs.jira_key }}',
+              target_url: 'https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}'
+            });
+
+      - name: Set commit status to failure
+        if: always() && inputs.sha != '' && steps.jira-check.outputs.success != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ inputs.sha }}',
+              state: 'failure',
+              description: 'Jira ticket is not Done ❌',
+              context: 'jira-check/${{ inputs.jira_key }}',
+              target_url: 'https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}'
+            });
