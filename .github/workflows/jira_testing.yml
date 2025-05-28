@@ -1,0 +1,33 @@
+name: Jira CI with PR Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      jira_key:
+        description: 'Jira ticket key'
+        required: true
+
+jobs:
+  jira-ci:
+    name: "${{ inputs.jira_key }} test case"
+    runs-on: ubuntu-latest
+
+    env:
+      JIRA_KEY: ${{ inputs.jira_key }}
+      JIRA_EMAIL: your-email@example.com
+      JIRA_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      JIRA_DOMAIN: your-domain.atlassian.net
+
+    steps:
+      - name: Wait for Jira to be DONE
+        run: |
+          jira_url="https://${JIRA_DOMAIN}/rest/api/3/issue/${JIRA_KEY}"
+          auth_header="Authorization: Basic $(echo -n "${JIRA_EMAIL}:${JIRA_TOKEN}" | base64)"
+          for ((i=1;i<=60;i++)); do
+            status=$(curl -s -H "Accept: application/json" -H "${auth_header}" "${jira_url}" | jq -r '.fields.status.name')
+            echo "Status: $status"
+            [[ "$status" == "Done" ]] && exit 0
+            sleep 30
+          done
+          echo "Timed out waiting for Jira to be Done"
+          exit 1
