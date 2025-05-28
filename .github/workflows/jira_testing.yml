@@ -1,5 +1,3 @@
-name: Jira CI with PR Check
-
 on:
   workflow_dispatch:
     inputs:
@@ -14,22 +12,8 @@ jobs:
   jira-ci:
     name: "${{ inputs.jira_key }} test case"
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      statuses: write
-      pull-requests: write
-      issues: write
-
-    env:
-      JIRA_KEY: ${{ inputs.jira_key }}
-      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-      JIRA_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
-
     steps:
-      - name: Set commit status to pending
-        if: inputs.sha != ''
+      - name: Set pending status
         uses: actions/github-script@v7
         with:
           script: |
@@ -38,49 +22,25 @@ jobs:
               repo: context.repo.repo,
               sha: '${{ inputs.sha }}',
               state: 'pending',
-              description: 'Checking Jira ticket status...',
-              context: 'jira-check/${{ inputs.jira_key }}'
+              context: 'jira-check',
+              description: 'Waiting for Jira status...'
             });
 
-      - name: Wait for Jira to be DONE
+      - name: Check Jira status
         run: |
-          jira_url="https://${JIRA_DOMAIN}/rest/api/3/issue/${JIRA_KEY}"
-          auth_header="Authorization: Basic $(echo -n "${JIRA_EMAIL}:${JIRA_TOKEN}" | base64)"
-          for ((i=1;i<=60;i++)); do
-            status=$(curl -s -H "Accept: application/json" -H "${auth_header}" "${jira_url}" | jq -r '.fields.status.name')
-            echo "Status: $status"
-            [[ "$status" == "Done" ]] && exit 0
-            sleep 30
-          done
-          echo "Timed out waiting for Jira to be Done"
-          exit 1
+          status="To Do"  # mock
+          [[ "$status" == "Done" ]] && echo "done=true" >> $GITHUB_ENV || echo "done=false" >> $GITHUB_ENV
 
-      - name: Set commit status to success
-        if: always() && inputs.sha != '' && steps.jira-check.outputs.success == 'true'
+      - name: Set final status (success/failure)
         uses: actions/github-script@v7
         with:
           script: |
+            const state = process.env.done === 'true' ? 'success' : 'failure';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ inputs.sha }}',
-              state: 'success',
-              description: 'Jira ticket is Done ✅',
-              context: 'jira-check/${{ inputs.jira_key }}',
-              target_url: 'https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}'
-            });
-
-      - name: Set commit status to failure
-        if: always() && inputs.sha != '' && steps.jira-check.outputs.success != 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: '${{ inputs.sha }}',
-              state: 'failure',
-              description: 'Jira ticket is not Done ❌',
-              context: 'jira-check/${{ inputs.jira_key }}',
-              target_url: 'https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}'
+              state,
+              context: 'jira-check',
+              description: state === 'success' ? 'Jira ticket is Done ✅' : 'Jira ticket not Done ❌'
             });
