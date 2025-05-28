@@ -14,9 +14,9 @@ jobs:
 
     env:
       JIRA_KEY: ${{ inputs.jira_key }}
-      JIRA_EMAIL: your-email@example.com
+      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
       JIRA_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      JIRA_DOMAIN: your-domain.atlassian.net
+      JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
 
     steps:
       - name: Wait for Jira to be DONE
