@@ -8,9 +8,6 @@ on:
       sha:
         description: 'Commit SHA for PR status check'
         required: true
-      pr_number:
-        description: 'PR number'
-        required: true
 jobs:
   jira-ci:
     name: Jira Check for ${{ inputs.jira_key }}
@@ -20,31 +17,17 @@ jobs:
       checks: write
       pull-requests: write
       issues: write
-      statuses: write
     env:
       JIRA_KEY: ${{ inputs.jira_key }}
       JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
       JIRA_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
       JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
     steps:
-      - name: Comment on PR - Starting
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ inputs.pr_number }},
-              body: `🔄 **Jira Check Started**\n\n🎫 **[${{ inputs.jira_key }}](${jiraUrl})** - Waiting for ticket to be marked as Done...\n\n⏳ This PR will be ready to merge once the Jira ticket is completed.`
-            });
-
       - name: Create Check Run
         id: create-check
         uses: actions/github-script@v7
         with:
           script: |
-            const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`;
             const response = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -52,26 +35,9 @@ jobs:
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString(),
-              output: {
-                title: 'Jira Status Check',
-                summary: `🔗 **[Click here to view Jira ticket ${{ inputs.jira_key }}](${jiraUrl})**\n\n⏳ Waiting for ticket to be marked as Done...`,
-                text: `Monitoring Jira ticket: ${{ inputs.jira_key }}\nDirect link: ${jiraUrl}`
-              }
+              details_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`
             });
             core.setOutput('check_run_id', response.data.id);
-
-      - name: Comment on PR - Starting
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ steps.pr.outputs.number }},
-              body: `🔄 **Jira Check Started**\n\n🎫 **[${jira_key}](${jiraUrl})** - Waiting for ticket to be marked as Done...\n\n⏳ This PR will be ready to merge once the Jira ticket is completed.`
-                .replace('${jira_key}', '${{ inputs.jira_key }}')
-            });
       - name: Wait for Jira to be DONE
         id: jira-wait
         run: |
@@ -93,38 +59,19 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`;
             const conclusion = "${{ steps.jira-wait.outputs.done }}" === "true" ? "success" : "failure";
-            const statusIcon = conclusion === "success" ? "✅" : "❌";
-            const statusText = conclusion === "success" ? "Done" : "NOT Done";
-
             await github.rest.checks.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               check_run_id: Number("${{ steps.create-check.outputs.check_run_id }}"),
               completed_at: new Date().toISOString(),
               conclusion,
+              details_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`,
               output: {
                 title: 'Jira Status Check',
-                summary: `🔗 **[Click here to view Jira ticket ${{ inputs.jira_key }}](${jiraUrl})**\n\n${statusIcon} Jira ticket is ${statusText}`,
-                text: `Final status for Jira ticket: ${{ inputs.jira_key }}\nDirect link: ${jiraUrl}`
+                summary: conclusion === "success"
+                  ? 'Jira ticket is Done ✅'
+                  : 'Jira ticket is NOT Done ❌',
+                text: `Checked Jira status for ${{ inputs.jira_key }}\n\n[View Jira Ticket](https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }})`
               }
-            });
-
-      - name: Comment on PR - Final Status
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`;
-            const isDone = "${{ steps.jira-wait.outputs.done }}" === "true";
-            const statusIcon = isDone ? "✅" : "❌";
-            const statusText = isDone ? "**DONE**" : "**NOT DONE**";
-            const actionText = isDone ? "🎉 This PR is now ready to merge!" : "⚠️ This PR cannot be merged until the Jira ticket is completed.";
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: ${{ inputs.pr_number }},
-              body: `${statusIcon} **Jira Check Complete**\n\n🎫 **[${{ inputs.jira_key }}](${jiraUrl})** is ${statusText}\n\n${actionText}`
             });
