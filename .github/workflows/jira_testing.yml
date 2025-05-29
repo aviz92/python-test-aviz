@@ -33,12 +33,15 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const jiraUrl = `https://${process.env.JIRA_DOMAIN}/browse/${process.env.JIRA_KEY}`;
+            const jiraKey = process.env.INPUT_JIRA_KEY;
+            const jiraUrl = `https://${process.env.JIRA_DOMAIN}/browse/${jiraKey}`;
+            const sha = process.env.INPUT_SHA;
+
             const response = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: `Jira Check – ${process.env.JIRA_KEY}`,
-              head_sha: '${{ inputs.sha }}',
+              name: `Jira Check – ${jiraKey}`,
+              head_sha: sha,
               status: 'in_progress',
               started_at: new Date().toISOString(),
               details_url: jiraUrl
