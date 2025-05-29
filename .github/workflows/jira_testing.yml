@@ -37,7 +37,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               name: `Jira Check – ${{ inputs.jira_key }}`,
-              [Open Jirax Ticket](https://${{ inputs.JIRA_DOMAIN }}/browse/${{ inputs.JIRA_KEY }})`
+              details_url: `https://${{ inputs.JIRA_DOMAIN }}/browse/${{ inputs.JIRA_KEY }}`
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString(),
