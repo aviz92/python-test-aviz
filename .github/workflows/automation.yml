@@ -1,0 +1,11 @@
+name: Automation
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  Automation-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
