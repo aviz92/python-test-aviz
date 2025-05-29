@@ -29,7 +29,23 @@ jobs:
       JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
 
     steps:
-      - name: Create Status Check
+      - name: Create Check Run (for animation)
+        id: create-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const response = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: `Jira Check – ${{ inputs.jira_key }}`,
+              head_sha: '${{ inputs.sha }}',
+              status: 'in_progress',
+              started_at: new Date().toISOString(),
+              details_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`
+            });
+            core.setOutput('check_run_id', response.data.id);
+
+      - name: Create Status Check (for direct link)
         uses: actions/github-script@v7
         with:
           script: |
@@ -40,7 +56,7 @@ jobs:
               state: 'pending',
               target_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`,
               description: 'Waiting for Jira ticket to be Done',
-              context: 'Jira Check – ${{ inputs.jira_key }}'
+              context: '🔗 Direct Link to ${{ inputs.jira_key }}'
             });
 
       - name: Wait for Jira to be DONE
@@ -60,6 +76,28 @@ jobs:
           echo "done=false" >> $GITHUB_OUTPUT
           exit 1
 
+      - name: Finalize Check Run
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conclusion = "${{ steps.jira-wait.outputs.done }}" === "true" ? "success" : "failure";
+            await github.rest.checks.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: Number("${{ steps.create-check.outputs.check_run_id }}"),
+              completed_at: new Date().toISOString(),
+              conclusion,
+              details_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`,
+              output: {
+                title: 'Jira Status Check',
+                summary: conclusion === "success"
+                  ? 'Jira ticket is Done ✅'
+                  : 'Jira ticket is NOT Done ❌',
+                text: `Checked Jira status for ${{ inputs.jira_key }}`
+              }
+            });
+
       - name: Update Status Check
         if: always()
         uses: actions/github-script@v7
@@ -77,5 +115,5 @@ jobs:
               state: state,
               target_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`,
               description: description,
-              context: 'Jira Check – ${{ inputs.jira_key }}'
+              context: '🔗 Direct Link to ${{ inputs.jira_key }}'
             });
