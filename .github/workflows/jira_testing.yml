@@ -33,20 +33,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const jiraUrl = `https://${process.env.JIRA_DOMAIN}/browse/${process.env.JIRA_KEY}`;
+            const jiraKey = '${{ inputs.jira_key }}';
+            const jiraUrl = `https://${process.env.JIRA_DOMAIN}/browse/${jiraKey}`;
+
             const response = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: `Jira Check – ${process.env.JIRA_KEY}`,
+              name: `Jira Check – ${jiraKey}`,
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString(),
               output: {
-                title: 'Checking Jira Ticket',
-                summary: `[Click here to open ${process.env.JIRA_KEY}](${jiraUrl})`,
-                text: 'Waiting for Jira ticket to be marked as Done...'
+                title: 'Jira Ticket Check Started',
+                summary: `Checking Jira status for [${jiraKey}](${jiraUrl})`,
+                text: `You can view the Jira ticket [here](${jiraUrl}).`
               }
             });
+
             core.setOutput('check_run_id', response.data.id);
 
       - name: Wait for Jira to be DONE
