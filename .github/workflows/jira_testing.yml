@@ -35,7 +35,8 @@ jobs:
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString(),
-              details_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`
+              details_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`,
+              external_id: '${{ inputs.jira_key }}'
             });
             core.setOutput('check_run_id', response.data.id);
       - name: Wait for Jira to be DONE
