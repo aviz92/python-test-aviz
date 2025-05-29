@@ -78,5 +78,6 @@ jobs:
                   ? 'Jira ticket is Done ✅'
                   : 'Jira ticket is NOT Done ❌',
                 text: 'Checked Jira status for ${{ inputs.jira_key }}'
+                [Open Jira Ticket](https://${JIRA_DOMAIN}/browse/${JIRA_KEY})`
               }
             });
