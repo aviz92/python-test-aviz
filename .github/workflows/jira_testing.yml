@@ -55,7 +55,7 @@ jobs:
               echo "done=true" >> $GITHUB_OUTPUT
               exit 0
             fi
-            sleep 30
+            sleep 3
           done
           echo "done=false" >> $GITHUB_OUTPUT
           exit 1
