@@ -34,7 +34,7 @@ jobs:
         with:
           script: |
             const jiraKey = ${{ inputs.jira_key }}`;
-            const jiraUrl = `https://${process.env.JIRA_DOMAIN}/browse/${jiraKey}`;
+            const jiraUrl = `https://${JIRA_DOMAIN}/rest/api/3/issue/${JIRA_KEY}`;
             const sha = '${{ inputs.sha }}';
 
             const response = await github.rest.checks.create({
