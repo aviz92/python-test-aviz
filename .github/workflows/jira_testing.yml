@@ -33,13 +33,20 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const jiraKey = '${{ inputs.jira_key }}';
+            const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${jiraKey}`;
             const response = await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: `Jira Check – ${{ inputs.jira_key }}`,
+              name: `JiraCheck-${jiraKey}`,
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
-              started_at: new Date().toISOString()
+              started_at: new Date().toISOString(),
+              output: {
+                title: 'Jira Status Check',
+                summary: `[View Jira Ticket →](${jiraUrl})`,
+                text: `Jira ticket **[${jiraKey}](${jiraUrl})** is being verified.`
+              }
             });
             core.setOutput('check_run_id', response.data.id);
 
