@@ -37,8 +37,11 @@ jobs:
               head_sha: '${{ inputs.sha }}',
               status: 'in_progress',
               started_at: new Date().toISOString(),
-              details_url: jiraUrl,
-              external_id: '${{ inputs.jira_key }}'
+              output: {
+                title: 'Jira Status Check',
+                summary: `🔗 **[Click here to view Jira ticket ${{ inputs.jira_key }}](${jiraUrl})**\n\n⏳ Waiting for ticket to be marked as Done...`,
+                text: `Monitoring Jira ticket: ${{ inputs.jira_key }}\nDirect link: ${jiraUrl}`
+              }
             });
             core.setOutput('check_run_id', response.data.id);
       - name: Wait for Jira to be DONE
@@ -64,18 +67,18 @@ jobs:
           script: |
             const jiraUrl = `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`;
             const conclusion = "${{ steps.jira-wait.outputs.done }}" === "true" ? "success" : "failure";
+            const statusIcon = conclusion === "success" ? "✅" : "❌";
+            const statusText = conclusion === "success" ? "Done" : "NOT Done";
+
             await github.rest.checks.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               check_run_id: Number("${{ steps.create-check.outputs.check_run_id }}"),
               completed_at: new Date().toISOString(),
               conclusion,
-              details_url: jiraUrl,
               output: {
                 title: 'Jira Status Check',
-                summary: conclusion === "success"
-                  ? 'Jira ticket is Done ✅'
-                  : 'Jira ticket is NOT Done ❌',
-                text: 'Checked Jira status for ${{ inputs.jira_key }}'
+                summary: `🔗 **[Click here to view Jira ticket ${{ inputs.jira_key }}](${jiraUrl})**\n\n${statusIcon} Jira ticket is ${statusText}`,
+                text: `Final status for Jira ticket: ${{ inputs.jira_key }}\nDirect link: ${jiraUrl}`
               }
             });
