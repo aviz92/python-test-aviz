@@ -37,7 +37,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ inputs.sha }}',
-              state: 'in progress',
+              state: 'pending',
               target_url: `https://${{ secrets.JIRA_DOMAIN }}/browse/${{ inputs.jira_key }}`,
               description: 'Waiting for Jira ticket to be Done',
               context: 'Jira Check – ${{ inputs.jira_key }}'
