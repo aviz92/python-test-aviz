@@ -6,14 +6,32 @@ on:
       marker:
         description: 'Pytest marker to run (e.g. slow, integration)'
         required: true
+      sha:
+        description: 'Commit SHA for status check'
+        required: false
 
 jobs:
   pytest-marker:
+    name: "pytest marker: ${{ inputs.marker }}"
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set commit status to pending
+        if: inputs.sha != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ inputs.sha }}',
+              state: 'pending',
+              description: 'Running pytest marker: ${{ inputs.marker }}',
+              context: 'pytest-marker/${{ inputs.marker }}'
+            });
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,6 +44,35 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run pytest with marker
+        id: pytest
         run: |
           echo "Running pytest with marker: ${{ inputs.marker }}"
-          pytest -m "${{ inputs.marker }}" --disable-warnings -q
+          pytest -m "${{ inputs.marker }}" --maxfail=1 --disable-warnings -q
+
+      - name: Set commit status to success
+        if: success() && inputs.sha != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ inputs.sha }}',
+              state: 'success',
+              description: 'Pytest marker ${{ inputs.marker }} passed',
+              context: 'pytest-marker/${{ inputs.marker }}'
+            });
+
+      - name: Set commit status to failure
+        if: failure() && inputs.sha != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ inputs.sha }}',
+              state: 'failure',
+              description: 'Pytest marker ${{ inputs.marker }} failed',
+              context: 'pytest-marker/${{ inputs.marker }}'
+            });
