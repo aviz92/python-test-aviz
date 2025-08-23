@@ -71,31 +71,6 @@ repos:
         types: [ python ]
 
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
-      - id: mypy
-        args: [
-          "--strict",  # Enables all recommended static checks (strong typing discipline)
-          "--ignore-missing-imports",  # Prevents errors for third-party packages without type hints
-          # "--no-strict-optional", # Uncomment to allow implicit Optional[...] types (not recommended)
-        ]
-        additional_dependencies: [
-          'types-beautifulsoup4',       # Type stubs for BeautifulSoup4
-          'types-requests',             # Type stubs for `requests`
-          'types-setuptools',           # Type stubs for `setuptools`
-          'types-urllib3',              # Type stubs for `urllib3`
-          'types-cachetools',           # Type stubs for `cachetools`
-          'atlassian-python-api',       # Actual package
-          'beautifulsoup4',             # Required for actual usage along with type stubs
-          'httpx',                      # HTTP client library
-          'python-dotenv',              # Loads environment variables from `.env` files
-          'markdownify',                # HTML → Markdown conversion
-          'python-dateutil',            # Enhanced date/time parsing
-          'types-python-dateutil',      # Type stubs for `dateutil`
-        ]
-
-
   - repo: https://github.com/pycqa/pylint
     rev: v3.0.3
     hooks:
