@@ -4,3 +4,8 @@ import pytest
 class TestDummy:
     def test_dummy(self):
         assert True
+
+
+@pytest.mark.dummy
+def test_true():
+    assert True
