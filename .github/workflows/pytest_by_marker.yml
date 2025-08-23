@@ -10,6 +10,11 @@ on:
         description: 'Commit SHA for status check'
         required: false
 
+permissions:
+  contents: read
+  statuses: write
+  pull-requests: read
+
 jobs:
   pytest-marker:
     name: "${{ inputs.marker }} pytest"
