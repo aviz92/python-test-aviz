@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_version = '1.0.4'
+package_version = '1.0.5'
 
 package_name = 'python-test-aviz'
 package_description = 'A test repository for testing the publishing process of a Python package.'
