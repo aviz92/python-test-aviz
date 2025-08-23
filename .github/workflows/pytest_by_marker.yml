@@ -28,13 +28,15 @@ jobs:
         with:
           script: |
             const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
+            console.log(`Setting pending status on SHA: ${sha}`);
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: sha,
               state: 'pending',
               description: 'Running pytest marker: ${{ inputs.marker }}',
-              context: 'pytest-marker/${{ inputs.marker }}'
+              context: 'pytest-marker/${{ inputs.marker }}',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
 
       - name: Set up Python
@@ -58,13 +60,15 @@ jobs:
         with:
           script: |
             const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
+            console.log(`Setting success status on SHA: ${sha}`);
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: sha,
               state: 'success',
               description: 'Pytest marker ${{ inputs.marker }} passed',
-              context: 'pytest-marker/${{ inputs.marker }}'
+              context: 'pytest-marker/${{ inputs.marker }}',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
 
       - name: Set commit status to failure
@@ -73,11 +77,13 @@ jobs:
         with:
           script: |
             const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
+            console.log(`Setting failure status on SHA: ${sha}`);
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: sha,
               state: 'failure',
               description: 'Pytest marker ${{ inputs.marker }} failed',
-              context: 'pytest-marker/${{ inputs.marker }}'
+              context: 'pytest-marker/${{ inputs.marker }}',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
