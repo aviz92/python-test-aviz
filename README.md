@@ -25,7 +25,7 @@ And in all cases:
 ## Pytest by Marker
 1. **Run pytest with marker "slow" on current branch**
     ```bash
-    ./run_pytest_marker.sh slow
+    ./run_pytest_marker.sh dummy
     ```
 
 2. **Run pytest with marker "integration" on a specific branch**
