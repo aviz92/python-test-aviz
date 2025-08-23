@@ -1,6 +1,16 @@
 # Python Test Package
 
-## Run Jira Check
+## Pre-requisites
+1. brew install gh
+2. gh auth login
+3. ./python_test_aviz/run_pytest_marker.sh <pytest_marker> (e.g. dummy, slow, integration)
+
+<br>
+
+---
+
+## Usage
+### Run Jira Check
 1. **Positional style**
    ```bash
    ./run_jira_check.sh ABC-123
@@ -22,7 +32,7 @@ And in all cases:
 
 ---
 
-## Pytest by Marker
+### Pytest by Marker
 1. **Run pytest with marker "slow" on current branch**
     ```bash
     ./run_pytest_marker.sh dummy
