@@ -59,7 +59,7 @@ jobs:
             const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
             const description = `Pytest marker ${{ inputs.marker }} ${state === 'success' ? 'passed' : 'failed'}`;
-            
+
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
