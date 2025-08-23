@@ -2,12 +2,14 @@ import pytest
 
 
 class TestDummy:
+    @staticmethod
     @pytest.mark.dummy
-    def test_dummy(self) -> None:
+    def test_dummy() -> None:
         assert True
 
+    @staticmethod
     @pytest.mark.dummy
-    def test_true(self) -> None:
+    def test_true() -> None:
         assert True
 
 
