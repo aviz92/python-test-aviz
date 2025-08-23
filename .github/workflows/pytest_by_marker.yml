@@ -18,14 +18,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.sha || github.sha }}
+
+      - name: Get current commit SHA
+        id: get-sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Set commit status to pending
         uses: actions/github-script@v7
         with:
           script: |
-            const sha = '${{ inputs.sha }}' || context.sha;
+            const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -55,7 +57,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const sha = '${{ inputs.sha }}' || context.sha;
+            const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -70,7 +72,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const sha = '${{ inputs.sha }}' || context.sha;
+            const sha = '${{ inputs.sha }}' || '${{ steps.get-sha.outputs.sha }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
