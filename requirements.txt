@@ -4,6 +4,7 @@ dotenv
 twine
 pytest
 pandas
+pytest-mypy
 
 custom-python-logger
 python-jira-plus

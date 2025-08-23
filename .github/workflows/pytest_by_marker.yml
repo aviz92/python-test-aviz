@@ -57,7 +57,7 @@ jobs:
       - name: Run pytest with marker
         run: |
           echo "Running pytest with marker: ${{ inputs.marker }}"
-          pytest -m "${{ inputs.marker }}" --maxfail=1 --disable-warnings -q
+          pytest --mypy -m "${{ inputs.marker }}" --maxfail=1 --disable-warnings -q
 
       - name: Set commit status to success
         if: success()
