@@ -10,10 +10,6 @@ class TestDummy:
     def test_true(self) -> None:
         assert True
 
-    @pytest.mark.dummy
-    def test_true(self) -> None:
-        assert True
-
 
 @pytest.mark.dummy
 def test_true() -> None:
