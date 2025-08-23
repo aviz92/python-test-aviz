@@ -1,11 +1,18 @@
 import pytest
 
-@pytest.mark.dummy
+
 class TestDummy:
-    def test_dummy(self):
+    @staticmethod
+    @pytest.mark.dummy
+    def test_dummy() -> None:
+        assert True
+
+    @staticmethod
+    @pytest.mark.dummy
+    def test_true() -> None:
         assert True
 
 
 @pytest.mark.dummy
-def test_true():
+def test_true() -> None:
     assert True
