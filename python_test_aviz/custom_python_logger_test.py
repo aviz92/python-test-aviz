@@ -1,13 +1,13 @@
 import logging
 
-from custom_python_logger import CustomLoggerAdapter
+from custom_python_logger import CustomLoggerAdapter, build_logger, get_logger
 
-logger: CustomLoggerAdapter = CustomLoggerAdapter(logging.getLogger(__name__))
+logger: CustomLoggerAdapter = get_logger(__name__)
 
 
 class LoggerTest:
     def __init__(self) -> None:
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self.__class__.__name__)
 
     def main(self) -> None:
         self.logger.info('Hello World')
@@ -32,9 +32,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    from custom_python_logger import get_logger
-
-    _ = get_logger(
+    _ = build_logger(
         project_name='Logger Project Test',
         log_level=logging.DEBUG,
         # extra={'user': 'test_user'}

@@ -2,9 +2,10 @@ import json
 import logging
 import os
 
+from custom_python_logger import build_logger, get_logger
 from python_notion_plus import NotionClient
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def main() -> None:
@@ -32,9 +33,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    from custom_python_logger import get_logger
-
-    _ = get_logger(
+    _ = build_logger(
         project_name='Logger Project Test',
         log_level=logging.DEBUG,
         # extra={'user': 'test_user'}
