@@ -1,11 +1,11 @@
 import logging
 
-from custom_python_logger import get_logger
+from custom_python_logger import build_logger, get_logger
 
 
 class AvizTest:
     def __init__(self) -> None:
-        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger = get_logger(self.__class__.__name__)
         self.name = "Aviz"
 
     def print_name(self) -> None:
@@ -13,7 +13,7 @@ class AvizTest:
 
 
 def main() -> None:
-    _ = get_logger(
+    _ = build_logger(
         project_name='Logger Project Test',
         log_level=logging.DEBUG,
         extra={'user': 'test_user'}
