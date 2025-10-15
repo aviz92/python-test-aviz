@@ -32,7 +32,6 @@ setup(
     url=package_url,
     project_urls={
         'Repository': package_url,
-        'Website': 'https://pypi.org/project/python-test-aviz/',
     },
     python_requires=package_python_requires,
 )
